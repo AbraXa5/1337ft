@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>1337ft</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">1337ft</h1>
+      <form action="/" method="POST">
+        <input type="text" name="url" placeholder="Enter URL" required />
+        <button type="submit">Bypass Paywall</button>
+      </form>
+    </div>
+  </body>
+</html>
