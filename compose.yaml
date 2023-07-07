@@ -1,0 +1,19 @@
+---
+services:
+  1337ft:
+    image: 1337ft:dev
+    container_name: 1337ft
+    hostname: 1337ft
+    environment:
+      - TZ=Asia/Kolkata
+    ports:
+      - 8008:8008
+    restart: unless-stopped
+    networks:
+      - default
+    # labels:
+    #   - 'kopia_backup'
+    #   - 'com.centurylinklabs.watchtower.enable=true'
+networks:
+  default:
+    name: 1337ft_default
