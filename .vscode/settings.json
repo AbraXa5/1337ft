@@ -10,7 +10,7 @@
   "isort.args": ["--profile", "black", "--lines_after_imports", "2"],
   "[python]": {
     "editor.codeActionsOnSave": {
-      "source.organizeImports": true
+      "source.organizeImports": "explicit"
     }
   },
   "json.schemas": [

@@ -15,6 +15,9 @@
         <input type="text" name="url" placeholder="Enter URL" required />
         <button type="submit">Bypass Paywall</button>
       </form>
+      {% if error %}
+      <p class="error">{{ error }}</p>
+      {% endif %}
     </div>
   </body>
 </html>

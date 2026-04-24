@@ -1,9 +1,12 @@
+import os
+
 from . import create_app
 
 
 def main():
     app = create_app()
-    app.run(debug=True, port=8008)
+    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(debug=debug, port=8008)
 
 
 if __name__ == "__main__":

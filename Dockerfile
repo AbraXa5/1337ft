@@ -1,5 +1,5 @@
 # Use the official Python base image
-FROM python:3.10-slim-buster
+FROM python:3.11-slim-bookworm
 
 # Set the working directory in the container
 WORKDIR /app
@@ -7,18 +7,13 @@ WORKDIR /app
 ENV PIP_DEFAULT_TIMEOUT=100 \
   PIP_DISABLE_PIP_VERSION_CHECK=1 \
   PIP_NO_CACHE_DIR=1 \
-  POETRY_VERSION=1.5.0
+  POETRY_VERSION=2.1.1
 
-# Install poetry:
-# RUN pip install poetry
-RUN curl -sSL https://install.python-poetry.org | python3 - --version "$POETRY_VERSION"
-ENV PATH="/root/.local/bin:$PATH"
+# Install Poetry
+RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
 # Copy the poetry.lock and pyproject.toml files to the working directory
 COPY poetry.lock pyproject.toml README.md ./
-
-# Install Poetry
-RUN pip install --no-cache-dir poetry
 
 # Install project dependencies
 RUN poetry config virtualenvs.create false && \

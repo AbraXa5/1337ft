@@ -4,7 +4,7 @@
 SHELL := /usr/bin/env bash
 PYTHON := python
 PYTHONPATH := $(shell pwd)
-POETRY_VERSION := 1.5.0
+POETRY_VERSION := 2.1.1
 
 #* Docker variables
 IMAGE := 1337ft
@@ -37,11 +37,11 @@ help:
 # Poetry
 .PHONY: poetry-download
 poetry-download:
-	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | $(PYTHON) - --version $(POETRY_VERSION)
+	pip install --no-cache-dir "poetry==$(POETRY_VERSION)"
 
 .PHONY: poetry-remove
 poetry-remove:
-	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | $(PYTHON) - --uninstall
+	pip uninstall -y poetry
 
 # Installation
 .PHONY: install
@@ -57,13 +57,18 @@ pre-commit-install:
 # Formatters
 .PHONY: codestyle
 codestyle:
-#poetry run pyupgrade --exit-zero-even-if-changed --py310-plus **/*.py
+	poetry run pyupgrade --exit-zero-even-if-changed --py311-plus **/*.py
 	poetry run ruff check --ignore E501 ./1337ft --fix
 	poetry run isort --settings-path pyproject.toml ./1337ft
 	poetry run black --config pyproject.toml ./1337ft
 
 .PHONY: format
 format: codestyle
+
+# Testing
+.PHONY: test
+test:
+	poetry run pytest tests/ -v
 
 # Linting
 .PHONY: check-codestyle

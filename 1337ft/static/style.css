@@ -80,3 +80,13 @@ button {
     min-height: 100vh;
   }
 }
+
+.error {
+  color: #c0392b;
+  background-color: #fdecea;
+  border: 1px solid #e74c3c;
+  border-radius: 4px;
+  padding: 10px 16px;
+  margin-top: 12px;
+  font-size: 14px;
+}
