@@ -1,7 +1,7 @@
 import importlib
 from unittest.mock import patch
 
-import pytest
+import requests as req
 
 
 _views = importlib.import_module("1337ft.views")
@@ -78,8 +78,6 @@ def test_post_valid_url_content_not_jinja_rendered(client):
 
 
 def test_post_fetch_failure_returns_502(client):
-    import requests as req
-
     with (
         patch.object(_views, "_validate_url"),
         patch.object(

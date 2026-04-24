@@ -1,29 +1,33 @@
-[tool.poetry]
-    name        = "1337ft"
-    version     = "0.1.0"
-    description = ""
-    authors     = ["Abraxas <abr4xa5@proton.me>"]
-    license     = "MIT"
-    readme      = "README.md"
-    packages    = [{ include = "1337ft" }]
+[project]
+    name            = "1337ft"
+    version         = "0.2.0"
+    description     = "A small attempt at trying to replicate 12ft.io"
+    authors         = [{ name = "Abraxas", email = "abr4xa5@proton.me" }]
+    license         = { text = "MIT" }
+    readme          = "README.md"
+    requires-python = ">=3.11"
 
-    [tool.poetry.dependencies]
-        python        = "^3.11"
-        requests      = "^2.32.0"
-        Flask         = "^3.1.0"
-        flask-limiter = "^3.5"
+    dependencies = ["requests>=2.32.0", "Flask>=3.1.0", "flask-limiter>=3.5"]
 
-    [tool.poetry.group.dev.dependencies]
-        black      = "^24.4.0"
-        mypy       = "^1.10.0"
-        isort      = { extras = ["colors"], version = "^5.13.0" }
-        pre-commit = "^3.7.0"
-        pytest     = "^8.2.0"
-        pyupgrade  = "^3.15.0"
-        ruff       = "^0.4.0"
+    [project.scripts]
+        "1337ft" = "1337ft.__main__:main"
 
-    [tool.poetry.scripts]
-        1337ft = "1337ft.__main__:main"
+[dependency-groups]
+    dev = [
+        "bandit>=1.7.0",
+        "mypy>=1.10.0",
+        "pre-commit>=3.7.0",
+        "pytest>=8.2.0",
+        "pyupgrade>=3.15.0",
+        "ruff>=0.4.0",
+    ]
+
+[build-system]
+    requires      = ["hatchling"]
+    build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+    packages = ["1337ft"]
 
 [tool.ruff]
     # https://docs.astral.sh/ruff/rules/
@@ -74,37 +78,9 @@
             force-single-line   = true
             lines-after-imports = 2
 
-[tool.black]
-    # Uncomment if pyproject.toml worked fine to ensure consistency with flake8
-    # line-length = 88
-    target-version = ["py311"]
-    include        = '\.pyi?$'
-    color          = true
-
-    exclude = '''
-    /(
-        \.git
-      | \.github
-      | \.hg
-      | \.mypy_cache
-      | \.tox
-      | \.venv
-      | _build
-      | build
-      | dist
-      | tests/pypi
-      | tests/test_artifacts
-      | pyproject.toml
-    )
-    '''
-
-[tool.isort]
-    profile             = "black"
-    force_single_line   = true
-    lines_after_imports = 2
-    # skip_gitignore         = true
-    include_trailing_comma = true
-    # multi_line_output = 3
+    [tool.ruff.format]
+        quote-style  = "double"
+        indent-style = "space"
 
 
 [tool.mypy]
@@ -131,10 +107,6 @@
     # show_error_context          = true
     # warn_redundant_casts        = true
     # warn_return_any             = true
-    # warn_unused_configs         = true0
+    # warn_unused_configs         = true
     # warn_unused_ignores         = true
     # exclude                     = []
-
-[build-system]
-    requires      = ["poetry-core"]
-    build-backend = "poetry.core.masonry.api"

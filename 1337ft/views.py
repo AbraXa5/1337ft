@@ -36,24 +36,24 @@ def _validate_url(url: str) -> None:
     """Validate a URL, blocking SSRF targets (private/reserved addresses)."""
     parsed = urlparse(url)
     if parsed.scheme not in ("http", "https"):
-        raise ValueError("Only http and https URLs are allowed.")
+        msg = "Only http and https URLs are allowed."
+        raise ValueError(msg)
     if not parsed.hostname:
-        raise ValueError("URL must have a valid hostname.")
+        msg = "URL must have a valid hostname."
+        raise ValueError(msg)
     try:
         addr_infos = socket.getaddrinfo(parsed.hostname, None)
     except socket.gaierror:
-        raise ValueError("Unable to resolve hostname.")
+        msg = "Unable to resolve hostname."
+        raise ValueError(msg)
+    _private_msg = "Requests to private or reserved addresses are not allowed."
     for _family, _type, _proto, _canonname, sockaddr in addr_infos:
         ip = ipaddress.ip_address(sockaddr[0])
         if ip.is_loopback or ip.is_link_local or ip.is_multicast:
-            raise ValueError(
-                "Requests to private or reserved addresses are not allowed."
-            )
+            raise ValueError(_private_msg)
         for network in _BLOCKED_NETWORKS:
             if ip in network:
-                raise ValueError(
-                    "Requests to private or reserved addresses are not allowed."
-                )
+                raise ValueError(_private_msg)
 
 
 @main.route("/", methods=["GET", "POST"])

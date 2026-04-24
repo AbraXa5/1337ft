@@ -4,7 +4,6 @@
 SHELL := /usr/bin/env bash
 PYTHON := python
 PYTHONPATH := $(shell pwd)
-POETRY_VERSION := 2.1.1
 
 #* Docker variables
 IMAGE := 1337ft
@@ -16,9 +15,7 @@ DOCKER_VERSION := dev
 .PHONY: help
 help:
 	@echo "Available targets:"
-	@echo "- poetry-download: Download and install Poetry"
-	@echo "- poetry-remove: Remove Poetry from the system"
-	@echo "- install: Install dependencies and install mypy types"
+	@echo "- install: Install dependencies and mypy types"
 	@echo "- pre-commit-install: Install pre-commit hooks"
 	@echo "- codestyle: Apply code formatting"
 	@echo "- format: Alias for codestyle"
@@ -34,33 +31,23 @@ help:
 	@echo "- clean: Alias for cleanup"
 
 
-# Poetry
-.PHONY: poetry-download
-poetry-download:
-	pip install --no-cache-dir "poetry==$(POETRY_VERSION)"
-
-.PHONY: poetry-remove
-poetry-remove:
-	pip uninstall -y poetry
-
 # Installation
 .PHONY: install
 install:
-	poetry install --no-interaction
-	poetry run mypy --install-types --non-interactive ./
+	uv sync
+	uv run mypy --install-types --non-interactive ./
 
 .PHONY: pre-commit-install
 pre-commit-install:
-	poetry run pre-commit install
-	poetry run pre-commit run --all-files --color=always --show-diff-on-failure
+	uv run pre-commit install
+	uv run pre-commit run --all-files --color=always --show-diff-on-failure
 
 # Formatters
 .PHONY: codestyle
 codestyle:
-	poetry run pyupgrade --exit-zero-even-if-changed --py311-plus **/*.py
-	poetry run ruff check --ignore E501 ./1337ft --fix
-	poetry run isort --settings-path pyproject.toml ./1337ft
-	poetry run black --config pyproject.toml ./1337ft
+	uv run pyupgrade --exit-zero-even-if-changed --py311-plus **/*.py
+	uv run ruff check --ignore E501 ./1337ft --fix
+	uv run ruff format ./1337ft
 
 .PHONY: format
 format: codestyle
@@ -68,32 +55,28 @@ format: codestyle
 # Testing
 .PHONY: test
 test:
-	poetry run pytest tests/ -v
+	uv run pytest tests/ -v
 
 # Linting
 .PHONY: check-codestyle
 check-codestyle:
-	poetry run ruff check --ignore E501 ./1337ft
-	poetry run isort --diff --check-only --settings-path pyproject.toml ./1337ft
-	poetry run black --diff --check --config pyproject.toml ./1337ft
+	uv run ruff check --ignore E501 ./1337ft
+	uv run ruff format --check ./1337ft
 
 .PHONY: mypy
 mypy:
-	poetry run mypy --config-file pyproject.toml ./
+	uv run mypy --config-file pyproject.toml ./
 
 .PHONY: check-safety
 check-safety:
-	poetry check
-# poetry run safety check --full-report
-	bandit -ll --recursive 1337ft tests
+	uv run bandit -ll --recursive 1337ft tests
 
 .PHONY: lint
 lint: check-codestyle mypy check-safety
 
 .PHONY: update-dev-deps
 update-dev-deps:
-	poetry add -G dev black@latest bandit@latest "isort[colors]@latest" mypy@latest pre-commit@latest \
-	pytest@latest pyupgrade@latest
+	uv add --dev bandit mypy pre-commit pytest pyupgrade ruff
 
 # Docker
 .PHONY: docker-build
@@ -108,7 +91,7 @@ docker-remove:
 	docker rmi -f $(IMAGE):$(DOCKER_VERSION)
 
 .PHONY: docker-run
-docker-run: ## Create an alias for running 1337ft_docker
+docker-run:
 	@echo "Running the 1337ft docker image..."
 	docker run -d --rm -p 8008:8008 --name 1337ft 1337ft:dev
 
@@ -135,3 +118,6 @@ build-remove:
 
 .PHONY: cleanup
 cleanup: pycache-remove ruff-remove mypycache-remove pytestcache-remove build-remove
+
+.PHONY: clean
+clean: cleanup
